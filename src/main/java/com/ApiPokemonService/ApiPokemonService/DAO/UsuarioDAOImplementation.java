@@ -1,8 +1,11 @@
 package com.ApiPokemonService.ApiPokemonService.DAO;
 
+import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Rol;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
+
+import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
@@ -16,6 +19,9 @@ public class UsuarioDAOImplementation implements IUsuario {
 
     @Autowired
     private EntityManager entityManager;
+
+    @Autowired
+    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
 
     @Override
     public Result GetAll() {
@@ -55,7 +61,7 @@ public class UsuarioDAOImplementation implements IUsuario {
 
             Rol rolBD = entityManager.find(Rol.class, usuario.getRol().getIdRol());
             usuario.setRol(rolBD);
-            
+
             entityManager.persist(usuario);
 
             result.object = usuario;
@@ -67,4 +73,5 @@ public class UsuarioDAOImplementation implements IUsuario {
         }
         return result;
     }
+
 }

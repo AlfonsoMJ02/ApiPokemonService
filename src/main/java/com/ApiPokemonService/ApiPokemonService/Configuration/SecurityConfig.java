@@ -23,13 +23,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/usuario/add").permitAll() // 🔥 tu registro
-                .anyRequest().authenticated()
-                )
+                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/usuario/add").permitAll()
+                        .anyRequest().authenticated())
                 .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
