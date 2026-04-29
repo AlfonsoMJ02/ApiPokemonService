@@ -14,11 +14,10 @@ public class DataSourceConfig {
         HikariDataSource dataSource = new HikariDataSource();
 
         dataSource.setDriverClassName("oracle.jdbc.driver.OracleDriver");
-        dataSource.setJdbcUrl("jdbc:oracle:thin:@localhost:1521:XE");
+        dataSource.setJdbcUrl("jdbc:oracle:thin:@//ALIEN28:1521/orcl");
         dataSource.setUsername("AMorenoPokeApi");
         dataSource.setPassword("password1");
 
-        // Configuración del pool
         dataSource.setMaximumPoolSize(10);
         dataSource.setMinimumIdle(2);
         dataSource.setIdleTimeout(30000);

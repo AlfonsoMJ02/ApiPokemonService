@@ -55,11 +55,99 @@ public class UsuarioDAOImplementation implements IUsuario {
 
             Rol rolBD = entityManager.find(Rol.class, usuario.getRol().getIdRol());
             usuario.setRol(rolBD);
-            
+
             entityManager.persist(usuario);
 
             result.object = usuario;
             result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
+    public Result Update(Usuario usuario) {
+        Result result = new Result();
+
+        try {
+            Usuario usuarioBD = entityManager.find(Usuario.class, usuario.getIdUsuario());
+
+            if (usuarioBD == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
+
+            usuarioBD.setNombre(usuario.getNombre());
+            usuarioBD.setApellidoPaterno(usuario.getApellidoPaterno());
+            usuarioBD.setApellidoMaterno(usuario.getApellidoMaterno());
+            usuarioBD.setUserName(usuario.getUserName());
+            usuarioBD.setTelefono(usuario.getTelefono());
+            usuarioBD.setCelular(usuario.getCelular());
+            usuarioBD.setEmail(usuario.getEmail());
+
+            usuarioBD.setRol(usuario.getRol());
+
+            entityManager.merge(usuarioBD);
+
+            result.correct = true;
+            result.object = "Usuario actualizado correctamente";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Transactional
+    @Override
+    public Result Delete(int idUsuario) {
+        Result result = new Result();
+
+        try {
+            Usuario usuarioEliminar = entityManager.find(Usuario.class, idUsuario);
+
+            if (usuarioEliminar == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
+
+            entityManager.remove(usuarioEliminar);
+            result.correct = true;
+            result.object = "Usuario eliminado correctamente";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
+    public Result GetByEmail(String email) {
+        Result result = new Result();
+
+        try {
+
+            TypedQuery<Usuario> query = entityManager.createQuery(
+                    "FROM Usuario WHERE Email = :pEmail",
+                    Usuario.class
+            );
+
+            query.setParameter("pEmail", email);
+
+            Usuario usuario = query.getSingleResult();
+
+            result.object = usuario;
+            result.correct = true;
+
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();

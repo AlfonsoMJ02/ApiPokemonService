@@ -6,4 +6,7 @@ import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
 public interface IUsuario {
     Result GetAll();
     Result Add(Usuario usuario);
+    Result Update(Usuario usuario);
+    Result Delete(int idUsuario);
+    Result GetByEmail(String email);
 }

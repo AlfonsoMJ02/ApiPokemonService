@@ -24,7 +24,6 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/auth/login").permitAll()
-                .requestMatchers("/usuario/add").permitAll() // 🔥 tu registro
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
