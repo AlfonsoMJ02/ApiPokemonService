@@ -49,8 +49,6 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
         return result;
     }
 
-
-    
     @Override
     public Result GetAllPokemonFavorites(int idUsuario) {
         Result<Object> result = new Result();
@@ -78,7 +76,6 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
     public Result<?> DeletePokemonFavorite(int idUsuario, Pokemon pokemonRecibido) {
         Result<PokemonFavorito> result = new Result<PokemonFavorito>();
         try {
-
             int eliminados = entityManager.createQuery(
                     "DELETE FROM PokemonFavorito p WHERE p.usuario.idUsuario = :idUsuario AND p.pokemon.idPokemon = :idPokemon")
                     .setParameter("idUsuario", idUsuario)
@@ -87,9 +84,22 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
 
             if (eliminados > 0) {
                 result.correct = true;
+
+                long conteo = (long) entityManager.createQuery(
+                        "SELECT COUNT(p) FROM PokemonFavorito p WHERE p.pokemon.idPokemon = :idPokemon")
+                        .setParameter("idPokemon", pokemonRecibido.getIdPokemon())
+                        .getSingleResult();
+
+                if (conteo == 0) {
+                    entityManager.createQuery(
+                            "DELETE FROM Pokemon p WHERE p.idPokemon = :idPokemon")
+                            .setParameter("idPokemon", pokemonRecibido.getIdPokemon())
+                            .executeUpdate();
+                }
+
             } else {
                 result.correct = false;
-                result.errorMessage = "pokemon favorito no encontrado";
+                result.errorMessage = "Pokemon favorito no encontrado";
             }
 
         } catch (Exception ex) {
@@ -142,8 +152,5 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
 
         return result;
     }
-
-
-
 
 }
