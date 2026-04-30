@@ -88,6 +88,7 @@ public class UsuarioDAOImplementation implements IUsuario {
             usuarioBD.setTelefono(usuario.getTelefono());
             usuarioBD.setCelular(usuario.getCelular());
             usuarioBD.setEmail(usuario.getEmail());
+            usuarioBD.setVerified(usuario.getVerified());
 
             usuarioBD.setRol(usuario.getRol());
 

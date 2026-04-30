@@ -1,35 +1,42 @@
 package com.ApiPokemonService.ApiPokemonService.JPA;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.Date;
 
 @Entity
+@Table(name = "VERIFICATIONTOKEN")
 public class VerificacionToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JoinColumn(name = "idtoken")
-    private int idToken;
-    @JoinColumn(name = "token")
+    @Column(name = "idtoken") 
+    private Long idToken;
+
+    @Column(name = "token") 
     private String token;
-    @JoinColumn(name = "expirationdate")
+
+    @Column(name = "expirationdate")
     private Date expirationDate;
-    @JoinColumn(name = "used")
+
+    @Column(name = "used")
     private int used;
-    
+
     @ManyToOne
     @JoinColumn(name = "idusuario")
     private Usuario usuario;
 
-    public int getIdToken() {
+    public Long getIdToken() {
         return idToken;
     }
 
-    public void setIdToken(int idToken) {
+    public void setIdToken(Long idToken) {
         this.idToken = idToken;
     }
 
