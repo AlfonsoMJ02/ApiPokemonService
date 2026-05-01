@@ -39,8 +39,27 @@ public class UsuarioRestController {
     CustomUserDetailsService usuarioService;
 
     @GetMapping()
-    public Result<Usuario> getAll() {
-        return usuarioDAO.GetAll();
+    public ResponseEntity<Result<Usuario>> getAll() {
+        Result<Usuario> result = new Result<Usuario>();
+        try {
+            result = usuarioDAO.GetAll();
+            if (result.correct) {
+                if (result.objects.isEmpty()) {
+                    return ResponseEntity.noContent().build();
+                }
+                return ResponseEntity.ok(result);
+
+            }else{
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+            return ResponseEntity.internalServerError().body(result);
+        }
+
+
     }
 
     @PostMapping("/add")
@@ -55,8 +74,23 @@ public class UsuarioRestController {
     }
 
     @GetMapping("/rol")
-    public Result<Rol> getAllRol() {
-        return rolDAO.GetAll();
+    public ResponseEntity<Result<Rol>> getAllRol() {
+        Result<Rol> result = new Result<Rol>();
+        try {
+            result= rolDAO.GetAll();
+            if (result.correct) {
+                return ResponseEntity.ok(result);
+
+            }else{
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+            return ResponseEntity.internalServerError().body(result);
+        }
+        
     }
 
     // POKEMON FAVORITOS DEL USUARIO ACTUAL

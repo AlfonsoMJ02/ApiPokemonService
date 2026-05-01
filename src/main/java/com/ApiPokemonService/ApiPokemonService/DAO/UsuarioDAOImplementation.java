@@ -24,8 +24,8 @@ public class UsuarioDAOImplementation implements IUsuario {
     private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
 
     @Override
-    public Result GetAll() {
-        Result result = new Result();
+    public Result<Usuario> GetAll() {
+        Result<Usuario> result = new Result<Usuario>();
 
         try {
             TypedQuery<Usuario> query = entityManager.createQuery("From Usuario", Usuario.class);
