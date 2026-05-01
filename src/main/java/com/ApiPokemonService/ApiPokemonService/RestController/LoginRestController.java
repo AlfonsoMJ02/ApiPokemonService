@@ -60,18 +60,28 @@ public class LoginRestController {
         if (usuario.getVerified() == 0) {
 
             String token = verificacionTokenService.generarToken(usuario);
-
             emailService.enviarCorreoVerificacion(usuario.getEmail(), token);
 
-            return ResponseEntity.ok("Debes verificar tu cuenta");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Debes verificar tu cuenta");
         }
 
-        String token = jwtUtil.generateToken(
+        String jwt = jwtUtil.generateToken(
                 usuario.getEmail(),
                 usuario.getRol().getNombre()
         );
 
-        return ResponseEntity.ok(token);
+        ResponseCookie cookie = ResponseCookie.from("token", jwt)
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(3600)
+                .sameSite("Lax")
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body("Login correcto");
     }
 
     @GetMapping("/verify")
@@ -109,7 +119,7 @@ public class LoginRestController {
 
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .header(HttpHeaders.LOCATION, "http://localhost:4200/home")
+                .header(HttpHeaders.LOCATION, "http://localhost:4200/")
                 .build();
     }
 }
