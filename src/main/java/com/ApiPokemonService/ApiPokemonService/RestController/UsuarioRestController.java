@@ -61,6 +61,26 @@ public class UsuarioRestController {
 
     }
 
+    @GetMapping("/{idUsuario}")
+    public ResponseEntity<Result<Usuario>> getById(@PathVariable("idUsuario") int idUsuario) {
+        Result<Usuario> result = new Result<>();
+        try {
+            result = usuarioDAO.GetById(idUsuario);
+            if (result.correct) {
+                return ResponseEntity.ok(result);
+            }else{
+                result.correct=false;
+                return ResponseEntity.badRequest().body(result);
+                
+            }
+        } catch (Exception e) {
+            result.correct=false;
+            result.ex= e;
+            result.errorMessage=e.getLocalizedMessage();
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
     @PostMapping("/add")
     public ResponseEntity<Result<Usuario>> add(@RequestBody Usuario usuario) {
         Result result = usuarioService.registro(usuario);

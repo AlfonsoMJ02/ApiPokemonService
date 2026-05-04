@@ -42,6 +42,27 @@ public class UsuarioDAOImplementation implements IUsuario {
     }
 
     @Override
+    public Result GetById(int idUsuario) {
+        Result<Usuario> result = new Result<Usuario>();
+
+        try {
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+            if (usuario != null) {
+                result.object = usuario;
+                result.correct = true;
+            } else {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
     @Transactional
     public Result Add(Usuario usuario) {
         Result result = new Result();
@@ -91,15 +112,14 @@ public class UsuarioDAOImplementation implements IUsuario {
 
             for (PokemonFavorito favorito : favoritos) {
 
-
-                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario, favorito.getPokemon());
-                if(!resultDeleteFavorite.correct){
+                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario,
+                        favorito.getPokemon());
+                if (!resultDeleteFavorite.correct) {
                     result.correct = false;
                     result.errorMessage = "Error al eliminar pokemon favorito: " + resultDeleteFavorite.errorMessage;
                     return result;
                 }
 
-                
             }
 
             entityManager.remove(usuario);
@@ -115,6 +135,12 @@ public class UsuarioDAOImplementation implements IUsuario {
         }
 
         return result;
+    }
+
+    @Override
+    public Result Update(Usuario usuario) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'Update'");
     }
 
 }

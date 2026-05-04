@@ -6,7 +6,9 @@ import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
 
 public interface IUsuario {
     Result GetAll();
+    Result GetById(int idUsuario);
     Result Add(Usuario usuario);
+    Result Update(Usuario usuario);
     Result eliminar(int idUsuario);
 
 }
