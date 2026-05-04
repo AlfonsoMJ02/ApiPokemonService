@@ -74,4 +74,47 @@ public class UsuarioDAOImplementation implements IUsuario {
         return result;
     }
 
+    @Transactional
+    @Override
+    public Result<?> eliminar(int idUsuario) {
+        Result<?> result = new Result<>();
+
+        try {
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+
+            if (usuario == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
+            List<PokemonFavorito> favoritos = usuario.getPokemonsFavoritos();
+
+            for (PokemonFavorito favorito : favoritos) {
+
+
+                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario, favorito.getPokemon());
+                if(!resultDeleteFavorite.correct){
+                    result.correct = false;
+                    result.errorMessage = "Error al eliminar pokemon favorito: " + resultDeleteFavorite.errorMessage;
+                    return result;
+                }
+
+                
+            }
+
+            entityManager.remove(usuario);
+            entityManager.flush();
+
+            result.correct = true;
+            result.errorMessage = "Usuario y relaciones eliminadas correctamente";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+
 }

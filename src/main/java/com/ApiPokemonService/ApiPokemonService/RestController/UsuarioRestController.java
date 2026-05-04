@@ -49,7 +49,7 @@ public class UsuarioRestController {
                 }
                 return ResponseEntity.ok(result);
 
-            }else{
+            } else {
                 return ResponseEntity.badRequest().body(result);
             }
         } catch (Exception ex) {
@@ -58,7 +58,6 @@ public class UsuarioRestController {
             result.ex = ex;
             return ResponseEntity.internalServerError().body(result);
         }
-
 
     }
 
@@ -73,15 +72,35 @@ public class UsuarioRestController {
         }
     }
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Result<?>> delete(@RequestParam("idUsuario") int idUsuario) {
+        Result<?> result = new Result<>();
+        try {
+            result = usuarioDAO.eliminar(idUsuario);
+            if (result.correct) {
+                return ResponseEntity.noContent()
+                        .build();
+            } else {
+                return ResponseEntity.status(401).body(result);
+            }
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+            return ResponseEntity.internalServerError().body(result);
+        }
+
+    }
+
     @GetMapping("/rol")
     public ResponseEntity<Result<Rol>> getAllRol() {
         Result<Rol> result = new Result<Rol>();
         try {
-            result= rolDAO.GetAll();
+            result = rolDAO.GetAll();
             if (result.correct) {
                 return ResponseEntity.ok(result);
 
-            }else{
+            } else {
                 return ResponseEntity.badRequest().body(result);
             }
         } catch (Exception ex) {
@@ -90,7 +109,7 @@ public class UsuarioRestController {
             result.ex = ex;
             return ResponseEntity.internalServerError().body(result);
         }
-        
+
     }
 
     // POKEMON FAVORITOS DEL USUARIO ACTUAL

@@ -26,6 +26,7 @@ public class SecurityConfig {
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/usuario/add").permitAll()
                         .requestMatchers("/usuario/pokeFavs/**").permitAll()
+                        .requestMatchers("/usuario/**").permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
