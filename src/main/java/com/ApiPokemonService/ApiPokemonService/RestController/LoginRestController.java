@@ -131,9 +131,7 @@ public class LoginRestController {
                 </html>
             """);
     }
-    
-    
-    
+
     @GetMapping("/me")
     public ResponseEntity<?> me(HttpServletRequest request) {
 
