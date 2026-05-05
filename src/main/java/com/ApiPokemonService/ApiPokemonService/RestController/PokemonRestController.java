@@ -1,6 +1,6 @@
 package com.ApiPokemonService.ApiPokemonService.RestController;
 
-import com.ApiPokemonService.ApiPokemonService.JPA.DTO.PokemonDTO;
+import com.ApiPokemonService.ApiPokemonService.DTO.PokemonDTO;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.Service.PokemonService;
 import org.springframework.beans.factory.annotation.Autowired;

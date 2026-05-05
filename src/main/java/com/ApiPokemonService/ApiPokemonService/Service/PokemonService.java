@@ -1,7 +1,7 @@
 package com.ApiPokemonService.ApiPokemonService.Service;
 
-import com.ApiPokemonService.ApiPokemonService.JPA.DTO.PokemonDTO;
-import com.ApiPokemonService.ApiPokemonService.JPA.DTO.PokemonResponse;
+import com.ApiPokemonService.ApiPokemonService.DTO.PokemonDTO;
+import com.ApiPokemonService.ApiPokemonService.DTO.PokemonResponse;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

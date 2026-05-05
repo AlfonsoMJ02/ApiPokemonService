@@ -1,4 +1,4 @@
-package com.ApiPokemonService.ApiPokemonService.JPA.DTO;
+package com.ApiPokemonService.ApiPokemonService.DTO;
 
 import java.util.List;
 
@@ -12,5 +12,4 @@ public class PokemonResponse {
     public void setResults(List<PokemonDTO> results) {
         this.results = results;
     }
-  
 }

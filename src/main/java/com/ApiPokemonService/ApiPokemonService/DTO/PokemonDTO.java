@@ -1,4 +1,4 @@
-package com.ApiPokemonService.ApiPokemonService.JPA.DTO;
+package com.ApiPokemonService.ApiPokemonService.DTO;
 
 public class PokemonDTO {
     private String name;
