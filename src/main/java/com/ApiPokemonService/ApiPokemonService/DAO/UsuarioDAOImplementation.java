@@ -1,8 +1,10 @@
 package com.ApiPokemonService.ApiPokemonService.DAO;
 
+import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Rol;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
+import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
@@ -17,9 +19,12 @@ public class UsuarioDAOImplementation implements IUsuario {
     @Autowired
     private EntityManager entityManager;
 
+    @Autowired
+    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
+
     @Override
-    public Result GetAll() {
-        Result result = new Result();
+    public Result<Usuario> GetAll() {
+        Result<Usuario> result = new Result<Usuario>();
 
         try {
             TypedQuery<Usuario> query = entityManager.createQuery("From Usuario", Usuario.class);
@@ -27,6 +32,27 @@ public class UsuarioDAOImplementation implements IUsuario {
             result.objects = new ArrayList<>(usuarios);
             result.correct = true;
 
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+    @Override
+    public Result GetById(int idUsuario) {
+        Result<Usuario> result = new Result<Usuario>();
+
+        try {
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+            if (usuario != null) {
+                result.object = usuario;
+                result.correct = true;
+            } else {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+            }
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
@@ -154,6 +180,48 @@ public class UsuarioDAOImplementation implements IUsuario {
             result.errorMessage = ex.getLocalizedMessage();
             result.ex = ex;
         }
+        return result;
+    }
+    
+    @Transactional
+    @Override
+    public Result<?> eliminar(int idUsuario) {
+        Result<?> result = new Result<>();
+
+        try {
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+
+            if (usuario == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
+            List<PokemonFavorito> favoritos = usuario.getPokemonsFavoritos();
+
+            for (PokemonFavorito favorito : favoritos) {
+
+                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario,
+                        favorito.getPokemon());
+                if (!resultDeleteFavorite.correct) {
+                    result.correct = false;
+                    result.errorMessage = "Error al eliminar pokemon favorito: " + resultDeleteFavorite.errorMessage;
+                    return result;
+                }
+
+            }
+
+            entityManager.remove(usuario);
+            entityManager.flush();
+
+            result.correct = true;
+            result.errorMessage = "Usuario y relaciones eliminadas correctamente";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
         return result;
     }
 }

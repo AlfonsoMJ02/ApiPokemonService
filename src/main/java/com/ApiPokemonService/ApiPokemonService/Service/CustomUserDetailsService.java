@@ -1,5 +1,6 @@
 package com.ApiPokemonService.ApiPokemonService.Service;
 
+
 import com.ApiPokemonService.ApiPokemonService.DAO.UsuarioDAOImplementation;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
