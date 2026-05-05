@@ -3,6 +3,7 @@ package com.ApiPokemonService.ApiPokemonService.Configuration;
 import com.ApiPokemonService.ApiPokemonService.Service.CustomUserDetailsService;
 import com.ApiPokemonService.ApiPokemonService.Service.JwtFilter;
 import com.ApiPokemonService.ApiPokemonService.Service.JwtUtil;
+import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,9 +25,10 @@ public class SecurityConfig {
             JwtFilter jwtFilter) throws Exception {
 
         http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/verify").permitAll()
+                .requestMatchers("/auth/login", "/auth/verify", "/auth/me").permitAll()
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -40,12 +42,13 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.addAllowedOrigin("http://localhost:4200");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedOrigins(List.of("http://localhost:4200"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowedMethods(List.of("*"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

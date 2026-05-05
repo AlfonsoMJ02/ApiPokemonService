@@ -7,6 +7,7 @@ import com.ApiPokemonService.ApiPokemonService.Service.EmailService;
 import com.ApiPokemonService.ApiPokemonService.Service.JwtUtil;
 import com.ApiPokemonService.ApiPokemonService.Service.VerificacionTokenService;
 import jakarta.persistence.EntityManager;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -16,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/auth")
 public class LoginRestController {
@@ -117,9 +117,50 @@ public class LoginRestController {
                 .maxAge(3600)
                 .build();
 
-        return ResponseEntity.status(HttpStatus.FOUND)
+        return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .header(HttpHeaders.LOCATION, "http://localhost:4200/")
-                .build();
+                .body("""
+                <html>
+                    <head>
+                        <title>Cuenta verificada</title>
+                    </head>
+                    <body style="font-Family:sans-serif;text-align:center;margin-top:50px;">
+                        <h2>Cuenta verificada con exito</h2>
+                        <p>Puedes regresar a la pagina anterior</p>
+                    </body>
+                </html>
+            """);
+    }
+    
+    
+    
+    @GetMapping("/me")
+    public ResponseEntity<?> me(HttpServletRequest request) {
+
+        if (request.getCookies() == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String token = null;
+
+        for (var cookie : request.getCookies()) {
+            if ("token".equals(cookie.getName())) {
+                token = cookie.getValue();
+            }
+        }
+
+        if (token == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        try {
+            if (jwtUtil.validateToken(token)) {
+                return ResponseEntity.ok("Autenticado");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 }
