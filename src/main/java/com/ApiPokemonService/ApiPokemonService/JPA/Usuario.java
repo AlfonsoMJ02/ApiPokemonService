@@ -41,15 +41,15 @@ public class Usuario {
     @JoinColumn(name = "idrol")
     private Rol rol;
 
-    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PokemonFavorito> PokemonsFavoritos;
+//    @OneToMany(mappedBy = "usuario", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PokemonFavorito> PokemonsFavoritos;
 
-    public List<PokemonFavorito> getPokemonsFavoritos() {
-        return PokemonsFavoritos;
-    }
-    public void setPokemonsFavoritos(List<PokemonFavorito> pokemonsFavoritos) {
-        PokemonsFavoritos = pokemonsFavoritos;
-    }
+//    public List<PokemonFavorito> getPokemonsFavoritos() {
+//        return PokemonsFavoritos;
+//    }
+//    public void setPokemonsFavoritos(List<PokemonFavorito> pokemonsFavoritos) {
+//        PokemonsFavoritos = pokemonsFavoritos;
+//    }
 
     public int getIdUsuario() {
         return idUsuario;

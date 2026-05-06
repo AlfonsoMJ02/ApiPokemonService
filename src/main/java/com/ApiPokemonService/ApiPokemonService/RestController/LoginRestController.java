@@ -113,8 +113,10 @@ public class LoginRestController {
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .httpOnly(true)
+                .secure(false)
                 .path("/")
                 .maxAge(3600)
+                .sameSite("Lax")
                 .build();
 
         return ResponseEntity.ok()
