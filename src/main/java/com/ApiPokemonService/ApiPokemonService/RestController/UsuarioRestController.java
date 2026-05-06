@@ -84,6 +84,23 @@ public class UsuarioRestController {
             return ResponseEntity.internalServerError().body(result);
         }
     }
+    @PutMapping("/update")
+    public ResponseEntity<Result<?>> update(@RequestBody Usuario usuario) {
+        Result<?> result = new Result<>();
+        try {
+            result = usuarioDAO.Update(usuario);
+            if (result.correct) {
+                return ResponseEntity.ok(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
 
     @PostMapping("/add")
     public ResponseEntity<Result<Usuario>> add(@RequestBody Usuario usuario) {
@@ -100,7 +117,7 @@ public class UsuarioRestController {
     public ResponseEntity<Result<?>> delete(@RequestParam("idUsuario") int idUsuario) {
         Result<?> result = new Result<>();
         try {
-            result = usuarioDAO.eliminar(idUsuario);
+            result = usuarioDAO.Delete(idUsuario);
             if (result.correct) {
                 return ResponseEntity.noContent()
                         .build();

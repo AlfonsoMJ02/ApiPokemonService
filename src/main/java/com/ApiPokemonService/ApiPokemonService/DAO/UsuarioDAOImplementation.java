@@ -4,6 +4,7 @@ import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Rol;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
+
 import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -94,98 +95,9 @@ public class UsuarioDAOImplementation implements IUsuario {
         return result;
     }
 
-    @Override
-    public Result Update(Usuario usuario) {
-        Result result = new Result();
-
-        try {
-            Usuario usuarioBD = entityManager.find(Usuario.class, usuario.getIdUsuario());
-
-            if (usuarioBD == null) {
-                result.correct = false;
-                result.errorMessage = "Usuario no encontrado";
-                return result;
-            }
-
-            usuarioBD.setNombre(usuario.getNombre());
-            usuarioBD.setApellidoPaterno(usuario.getApellidoPaterno());
-            usuarioBD.setApellidoMaterno(usuario.getApellidoMaterno());
-            usuarioBD.setUserName(usuario.getUserName());
-            usuarioBD.setTelefono(usuario.getTelefono());
-            usuarioBD.setCelular(usuario.getCelular());
-            usuarioBD.setEmail(usuario.getEmail());
-            usuarioBD.setVerified(usuario.getVerified());
-
-            usuarioBD.setRol(usuario.getRol());
-
-            entityManager.merge(usuarioBD);
-
-            result.correct = true;
-            result.object = "Usuario actualizado correctamente";
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
-        return result;
-    }
-
     @Transactional
     @Override
-    public Result Delete(int idUsuario) {
-        Result result = new Result();
-
-        try {
-            Usuario usuarioEliminar = entityManager.find(Usuario.class, idUsuario);
-
-            if (usuarioEliminar == null) {
-                result.correct = false;
-                result.errorMessage = "Usuario no encontrado";
-                return result;
-            }
-
-            entityManager.remove(usuarioEliminar);
-            result.correct = true;
-            result.object = "Usuario eliminado correctamente";
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
-        return result;
-    }
-
-    @Override
-    public Result GetByEmail(String email) {
-        Result result = new Result();
-
-        try {
-
-            TypedQuery<Usuario> query = entityManager.createQuery(
-                    "FROM Usuario WHERE Email = :pEmail",
-                    Usuario.class
-            );
-
-            query.setParameter("pEmail", email);
-
-            Usuario usuario = query.getSingleResult();
-
-            result.object = usuario;
-            result.correct = true;
-
-        } catch (Exception ex) {
-            result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
-        }
-        return result;
-    }
-    
-    @Transactional
-    @Override
-    public Result<?> eliminar(int idUsuario) {
+    public Result<?> Delete(int idUsuario) {
         Result<?> result = new Result<>();
 
         try {
@@ -224,4 +136,63 @@ public class UsuarioDAOImplementation implements IUsuario {
 
         return result;
     }
+    @Transactional
+    @Override
+    public Result<Usuario> Update(Usuario usuario) {
+        Result<Usuario> result = new Result<Usuario>();
+
+        try {
+            TypedQuery<Long> query = entityManager
+                    .createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.email = :email AND u.idUsuario <> :idUsuario",
+                            Long.class);
+
+            query.setParameter("email", usuario.getEmail());
+            query.setParameter("idUsuario", usuario.getIdUsuario());
+
+            Long count = query.getSingleResult();
+
+            if (count > 0) {
+                result.correct = false;
+                result.errorMessage = "Este correo ya esta registrado";
+                return result;
+            }
+            Usuario usuarioBD = entityManager.find(Usuario.class, usuario.getIdUsuario());
+            if (usuarioBD == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            } else {
+                usuarioBD.setNombre(usuario.getNombre());
+                usuarioBD.setUserName(usuario.getUserName());
+                usuarioBD.setApellidoMaterno(usuario.getApellidoMaterno());
+                usuarioBD.setApellidoPaterno(usuario.getApellidoPaterno());
+                usuarioBD.setTelefono(usuario.getTelefono());
+                usuarioBD.setCelular(usuario.getCelular());
+                usuarioBD.setEmail(usuario.getEmail());
+                usuarioBD.setRol(usuario.getRol());
+            }
+
+            Rol rolBD = entityManager.find(Rol.class, usuario.getRol().getIdRol());
+            usuario.setRol(rolBD);
+
+            entityManager.merge(usuarioBD);
+
+            result.object = usuarioBD;
+            result.correct = true;
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
+
+  
+
+    @Override
+    public Result GetByEmail(String email) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'GetByEmail'");
+    }
+
 }
