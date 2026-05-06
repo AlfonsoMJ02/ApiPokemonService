@@ -60,7 +60,12 @@ public class LoginRestController {
         if (usuario.getVerified() == 0) {
 
             String token = verificacionTokenService.generarToken(usuario);
-            emailService.enviarCorreoVerificacion(usuario.getEmail(), token);
+            try {
+                emailService.enviarCorreoVerificacion(usuario.getEmail(), token);
+            } catch (Exception e) {
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body("Error al enviar correo de verificación");
+            }
 
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body("Debes verificar tu cuenta");
@@ -68,8 +73,7 @@ public class LoginRestController {
 
         String jwt = jwtUtil.generateToken(
                 usuario.getEmail(),
-                usuario.getRol().getNombre()
-        );
+                usuario.getRol().getNombre());
 
         ResponseCookie cookie = ResponseCookie.from("token", jwt)
                 .httpOnly(true)
@@ -122,16 +126,16 @@ public class LoginRestController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body("""
-                <html>
-                    <head>
-                        <title>Cuenta verificada</title>
-                    </head>
-                    <body style="font-Family:sans-serif;text-align:center;margin-top:50px;">
-                        <h2>Cuenta verificada con exito</h2>
-                        <p>Puedes regresar a la pagina anterior</p>
-                    </body>
-                </html>
-            """);
+                            <html>
+                                <head>
+                                    <title>Cuenta verificada</title>
+                                </head>
+                                <body style="font-Family:sans-serif;text-align:center;margin-top:50px;">
+                                    <h2>Cuenta verificada con exito</h2>
+                                    <p>Puedes regresar a la pagina anterior</p>
+                                </body>
+                            </html>
+                        """);
     }
 
     @GetMapping("/me")
