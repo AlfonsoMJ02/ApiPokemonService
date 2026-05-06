@@ -1,5 +1,6 @@
 package com.ApiPokemonService.ApiPokemonService.RestController;
 
+import com.ApiPokemonService.ApiPokemonService.DAO.PokemonFavoritoDAOImplementation;
 import com.ApiPokemonService.ApiPokemonService.DAO.RolDAOImplementation;
 import com.ApiPokemonService.ApiPokemonService.DAO.UsuarioDAOImplementation;
 import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
@@ -34,8 +35,8 @@ public class UsuarioRestController {
     @Autowired
     private UsuarioDAOImplementation usuarioDAO;
 
-//    @Autowired
-//    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
+    @Autowired
+    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
 
     @Autowired
     CustomUserDetailsService usuarioService;
@@ -70,18 +71,19 @@ public class UsuarioRestController {
             result = usuarioDAO.GetById(idUsuario);
             if (result.correct) {
                 return ResponseEntity.ok(result);
-            }else{
-                result.correct=false;
+            } else {
+                result.correct = false;
                 return ResponseEntity.badRequest().body(result);
-                
+
             }
         } catch (Exception e) {
-            result.correct=false;
-            result.ex= e;
-            result.errorMessage=e.getLocalizedMessage();
+            result.correct = false;
+            result.ex = e;
+            result.errorMessage = e.getLocalizedMessage();
             return ResponseEntity.internalServerError().body(result);
         }
     }
+
     @PutMapping("/update")
     public ResponseEntity<Result<?>> update(@RequestBody Usuario usuario) {
         Result<?> result = new Result<>();
@@ -130,38 +132,38 @@ public class UsuarioRestController {
         }
 
     }
-    
+
     @PutMapping("/update/{idUsuario}")
-    public ResponseEntity<?> update(@PathVariable int idUsuario, @RequestBody Usuario usuario){
+    public ResponseEntity<?> update(@PathVariable int idUsuario, @RequestBody Usuario usuario) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         String emailLogueado = auth.getName();
-        
+
         boolean esMaestro = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(("ROLE_Maestro")));
-        
+
         Result resultUsuario = usuarioDAO.GetByEmail(emailLogueado);
-        
+
         if (!resultUsuario.correct) {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
-        
+
         Usuario usuarioLogueado = (Usuario) resultUsuario.object;
-        
+
         if (!esMaestro && usuarioLogueado.getIdUsuario() != idUsuario) {
             return ResponseEntity.status(403).body("No tienes permisos para editar a este usuario");
         }
-        
+
         usuario.setIdUsuario(idUsuario);
         Result result = usuarioDAO.Update(usuario);
-        
+
         if (result.correct) {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.status(404).body(result);
         }
     }
-    
-     @GetMapping("/rol")
+
+    @GetMapping("/rol")
     public ResponseEntity<Result<Rol>> getAllRol() {
         Result<Rol> result = new Result<Rol>();
         try {
@@ -182,59 +184,95 @@ public class UsuarioRestController {
     }
 
     // POKEMON FAVORITOS DEL USUARIO ACTUAL
-//    @GetMapping("/pokeFavs/{idUsuario}")
-//    public ResponseEntity GetAllPokemonFavorites(@PathVariable("idUsuario") int idUsuario) {
-//        Result result = new Result<>();
-//        try {
-//            result = pokemonFavoritoDAOImplementation.GetAllPokemonFavorites(idUsuario);
-//            if (result.correct) {
-//                return ResponseEntity.ok().body(result);
-//            } else {
-//                return ResponseEntity.badRequest().body(result);
-//            }
-//        } catch (Exception e) {
-//            result.correct = false;
-//            result.errorMessage = e.getLocalizedMessage();
-//            result.ex = e;
-//            return ResponseEntity.internalServerError().body(result);
-//        }
-//    }
+    @GetMapping("/pokeFavs/{idUsuario}")
+    public ResponseEntity GetAllPokemonFavorites(@PathVariable("idUsuario") int idUsuario) {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetAllPokemonFavorites(idUsuario);
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
 
-//    @PostMapping("/pokeFavs/{idUsuario}")
-//    public ResponseEntity AddPokemonFavorite(@PathVariable("idUsuario") int idUsuario,
-//            @RequestBody Pokemon pokemon) {
-//        Result result = new Result<>();
-//        try {
-//            result = pokemonFavoritoDAOImplementation.AddPokemonFavorite(idUsuario, pokemon);
-//            if (result.correct) {
-//                return ResponseEntity.ok().body(result);
-//            } else {
-//                return ResponseEntity.badRequest().body(result);
-//            }
-//        } catch (Exception e) {
-//            result.correct = false;
-//            result.errorMessage = e.getLocalizedMessage();
-//            result.ex = e;
-//            return ResponseEntity.internalServerError().body(result);
-//        }
-//    }
+    @PostMapping("/pokeFavs/{idUsuario}")
+    public ResponseEntity AddPokemonFavorite(@PathVariable("idUsuario") int idUsuario,
+            @RequestBody Pokemon pokemon) {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.AddPokemonFavorite(idUsuario, pokemon);
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
 
-//    @DeleteMapping("/pokeFavs/{idUsuario}")
-//    public ResponseEntity DeletePokemonFavorite(@PathVariable("idUsuario") int idUsuario,
-//            @RequestBody Pokemon pokemon) {
-//        Result<?> result = new Result<>();
-//        try {
-//            result = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario, pokemon);
-//            if (result.correct) {
-//                return ResponseEntity.noContent().build();
-//            } else {
-//                return ResponseEntity.badRequest().body(result);
-//            }
-//        } catch (Exception e) {
-//            result.correct = false;
-//            result.errorMessage = e.getLocalizedMessage();
-//            result.ex = e;
-//            return ResponseEntity.internalServerError().body(result);
-//        }
-//    }
+    @DeleteMapping("/pokeFavs/{idUsuario}")
+    public ResponseEntity DeletePokemonFavorite(@PathVariable("idUsuario") int idUsuario,
+            @RequestBody Pokemon pokemon) {
+        Result<?> result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario, pokemon);
+            if (result.correct) {
+                return ResponseEntity.noContent().build();
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @GetMapping("/pokeFavs/mostFavorite")
+    public ResponseEntity GetPokemonFavoriteStadistics() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetMostFavoritePokemon();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @GetMapping("/pokeFavs/favoritesWithUsers")
+    public ResponseEntity GetFavoritePokemonWithUsers() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetFavoritePokemonWithUsers();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
 }

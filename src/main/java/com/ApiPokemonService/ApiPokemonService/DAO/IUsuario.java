@@ -11,4 +11,5 @@ public interface IUsuario {
     Result Delete(int idUsuario);
     Result GetByEmail(String email);
     
+    
 }
