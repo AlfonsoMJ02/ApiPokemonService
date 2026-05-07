@@ -241,7 +241,7 @@ public class UsuarioRestController {
     }
 
     @GetMapping("/pokeFavs/mostFavorite")
-    public ResponseEntity GetPokemonFavoriteStadistics() {
+    public ResponseEntity GetMostFavoritePokemon() {
         Result result = new Result<>();
         try {
             result = pokemonFavoritoDAOImplementation.GetMostFavoritePokemon();
@@ -258,7 +258,25 @@ public class UsuarioRestController {
         }
     }
 
-    @GetMapping("/pokeFavs/favoritesWithUsers")
+    @GetMapping("/pokeFavs/leastFavorite")
+    public ResponseEntity GetPokemonLeastFavorite() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetLeastFavoritePokemon();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            result.ex = e;  
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @GetMapping("/pokeFavs/allFavorites")
     public ResponseEntity GetFavoritePokemonWithUsers() {
         Result result = new Result<>();
         try {

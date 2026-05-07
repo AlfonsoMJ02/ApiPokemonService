@@ -1,6 +1,10 @@
 package com.ApiPokemonService.ApiPokemonService.DAO;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
@@ -154,7 +158,7 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
         Result<Pokemon> result = new Result<>();
         try {
             Object topPokemon = entityManager.createQuery(
-                    "SELECT p.pokemon.name, COUNT(p) as total " +
+                    "SELECT p.pokemon.name,p.pokemon.idPokemon, COUNT(p) as total " +
                             "FROM PokemonFavorito p " +
                             "GROUP BY p.pokemon.idPokemon, p.pokemon.name " +
                             "ORDER BY total DESC")
@@ -175,9 +179,36 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
     }
 
     @Override
+    public Result<Pokemon> GetLeastFavoritePokemon() {
+        Result<Pokemon> result = new Result<>();
+        try {
+            Object topPokemon = entityManager.createQuery(
+                    "SELECT p.pokemon.name, COUNT(p) as total " +
+                            "FROM PokemonFavorito p " +
+                            "GROUP BY p.pokemon.idPokemon, p.pokemon.name " +
+                            "ORDER BY total ASC")
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+            result.object = topPokemon;
+            result.correct = true;
+            result.errorMessage = "Pokémon menos seleccionado recuperado";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+
+    @Override
     public Result<Object[]> GetFavoritePokemonWithUsers() {
         Result<Object[]> result = new Result<>();
+
         try {
+
             List<Object[]> lista = entityManager.createQuery(
                     "SELECT p.pokemon.idPokemon, p.pokemon.name, u.userName " +
                             "FROM PokemonFavorito p " +
@@ -186,14 +217,48 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
                     Object[].class)
                     .getResultList();
 
-            result.objects = lista;
+            Map<Integer, Object[]> agrupados = new LinkedHashMap<>();
+
+            for (Object[] item : lista) {
+
+                Integer idPokemon = (Integer) item[0];
+                String nombrePokemon = (String) item[1];
+                String usuario = (String) item[2];
+
+                if (agrupados.containsKey(idPokemon)) {
+
+                    Object[] existente = agrupados.get(idPokemon);
+                    existente[2] = existente[2] + ", " + usuario;
+
+                } else {
+
+                    agrupados.put(idPokemon, new Object[] {
+                            idPokemon,
+                            nombrePokemon,
+                            usuario
+                    });
+                }
+            }
+
+            List<Object[]> resultadoFinal = new ArrayList<>(agrupados.values());
+
+            resultadoFinal.forEach(item -> {
+                System.out.println(
+                        "ID Pokemon: " + item[0] +
+                                ", Nombre: " + item[1] +
+                                ", Usuarios: " + item[2]);
+            });
+
+            result.objects = resultadoFinal;
             result.correct = true;
 
         } catch (Exception ex) {
+
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
             result.ex = ex;
         }
+
         return result;
     }
 

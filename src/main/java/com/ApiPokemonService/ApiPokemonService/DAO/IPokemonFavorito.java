@@ -9,5 +9,6 @@ public interface IPokemonFavorito {
     Result DeletePokemonFavorite(int idUsuario, Pokemon pokemon);
     Result AddPokemonFavorite(int idUsuario, Pokemon pokemonRecibido);
     Result<Pokemon> GetMostFavoritePokemon();
+    Result<Pokemon> GetLeastFavoritePokemon();
     Result<Object[]> GetFavoritePokemonWithUsers();
 }
