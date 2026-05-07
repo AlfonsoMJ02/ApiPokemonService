@@ -16,17 +16,32 @@ public class VerificacionTokenService {
     private VerificacionTokenRepository tokenRepository;
 
     @Transactional
-    public String generarToken(Usuario usuario) {
+    public String generarToken(Usuario usuario, String type) {
 
         tokenRepository.deleteByUsuario(usuario);
 
         String token = UUID.randomUUID().toString();
 
         VerificacionToken v = new VerificacionToken();
+
         v.setToken(token);
         v.setUsuario(usuario);
         v.setUsed(0);
-        v.setExpirationDate(new Date(System.currentTimeMillis() + (15 * 60 * 1000)));
+
+        v.setType(type);
+
+        if (type.equals("VERIFY")) {
+
+            v.setExpirationDate(
+                    new Date(System.currentTimeMillis() + (15 * 60 * 1000))
+            );
+
+        } else {
+
+            v.setExpirationDate(
+                    new Date(System.currentTimeMillis() + (5 * 60 * 1000))
+            );
+        }
 
         tokenRepository.save(v);
 

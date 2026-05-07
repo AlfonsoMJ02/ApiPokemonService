@@ -59,7 +59,7 @@ public class LoginRestController {
 
         if (usuario.getVerified() == 0) {
 
-            String token = verificacionTokenService.generarToken(usuario);
+            String token = verificacionTokenService.generarToken(usuario, "VERIFY");
             try {
                 emailService.enviarCorreoVerificacion(usuario.getEmail(), token);
             } catch (Exception e) {
@@ -95,6 +95,10 @@ public class LoginRestController {
 
         if (vToken == null) {
             return ResponseEntity.badRequest().body("Token inválido");
+        }
+
+        if (!vToken.getType().equals("VERIFY")) {
+            return ResponseEntity.badRequest().body("Tipo de token inválido");
         }
 
         if (vToken.getUsed() == 1) {
@@ -166,5 +170,79 @@ public class LoginRestController {
         }
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(
+            @RequestBody Usuario usuarioRequest) {
+
+        Usuario usuario = entityManager
+                .createQuery(
+                        "FROM Usuario WHERE email = :email",
+                        Usuario.class
+                )
+                .setParameter("email", usuarioRequest.getEmail())
+                .getResultStream()
+                .findFirst()
+                .orElse(null);
+
+        if (usuario != null) {
+
+            String token = verificacionTokenService
+                    .generarToken(usuario, "RESET_PASSWORD");
+
+            emailService.enviarCorreoRecuperacion(
+                    usuario.getEmail(),
+                    token
+            );
+        }
+
+        return ResponseEntity.ok(
+                "Si el correo existe, se enviaron instrucciones"
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(
+            @RequestParam String token,
+            @RequestBody Usuario usuarioRequest) {
+
+        VerificacionToken vToken
+                = verificacionTokenService.buscarPorToken(token);
+
+        if (vToken == null) {
+            return ResponseEntity.badRequest()
+                    .body("Token inválido");
+        }
+
+        if (!vToken.getType().equals("RESET_PASSWORD")) {
+            return ResponseEntity.badRequest()
+                    .body("Tipo de token inválido");
+        }
+
+        if (vToken.getUsed() == 1) {
+            return ResponseEntity.badRequest()
+                    .body("Token ya usado");
+        }
+
+        if (vToken.getExpirationDate().before(new Date())) {
+            return ResponseEntity.badRequest()
+                    .body("Token expirado");
+        }
+
+        Usuario usuario = vToken.getUsuario();
+
+        usuario.setPassword(passwordEncoder.encode(usuarioRequest.getPassword())
+        );
+
+        usuarioDAO.UpdatePassword(usuario);
+
+        vToken.setUsed(1);
+
+        verificacionTokenService.actualizarToken(vToken);
+
+        return ResponseEntity.ok(
+                "Contraseña actualizada correctamente"
+        );
     }
 }

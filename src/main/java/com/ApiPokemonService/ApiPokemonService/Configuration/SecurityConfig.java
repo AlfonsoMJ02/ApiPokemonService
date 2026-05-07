@@ -25,15 +25,14 @@ public class SecurityConfig {
             JwtFilter jwtFilter) throws Exception {
 
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) 
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/verify", "/auth/me").permitAll()
-                .requestMatchers("/usuario/**").permitAll()
+                .requestMatchers("/auth/login", "/auth/verify", "/auth/me", "/auth/forgot-password", "/auth/reset-password").permitAll()
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+                .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 

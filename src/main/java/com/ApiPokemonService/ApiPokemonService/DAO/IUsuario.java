@@ -10,5 +10,5 @@ public interface IUsuario {
     Result Update(Usuario usuario);
     Result Delete(int idUsuario);
     Result GetByEmail(String email);
-    
+    Result UpdatePassword(Usuario usuario);
 }

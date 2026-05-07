@@ -4,6 +4,7 @@ import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Rol;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
 import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
+import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
@@ -18,8 +19,8 @@ public class UsuarioDAOImplementation implements IUsuario {
     @Autowired
     private EntityManager entityManager;
 
-//    @Autowired
-//    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
+    @Autowired
+    private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
 
     @Override
     public Result<Usuario> GetAll() {
@@ -96,46 +97,45 @@ public class UsuarioDAOImplementation implements IUsuario {
     @Transactional
     @Override
     public Result<?> Delete(int idUsuario) {
-//        Result<?> result = new Result<>();
-//
-//        try {
-//            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
-//
-//            if (usuario == null) {
-//                result.correct = false;
-//                result.errorMessage = "Usuario no encontrado";
-//                return result;
-//            }
-//            List<PokemonFavorito> favoritos = usuario.getPokemonsFavoritos();
-//
-//            for (PokemonFavorito favorito : favoritos) {
-//
-//                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario,
-//                        favorito.getPokemon());
-//                if (!resultDeleteFavorite.correct) {
-//                    result.correct = false;
-//                    result.errorMessage = "Error al eliminar pokemon favorito: " + resultDeleteFavorite.errorMessage;
-//                    return result;
-//                }
-//
-//            }
-//
-//            entityManager.remove(usuario);
-//            entityManager.flush();
-//
-//            result.correct = true;
-//            result.errorMessage = "Usuario y relaciones eliminadas correctamente";
-//
-//        } catch (Exception ex) {
-//            result.correct = false;
-//            result.errorMessage = ex.getLocalizedMessage();
-//            result.ex = ex;
-//        }
-//
-//        return result;
-    return null;
+        Result<?> result = new Result<>();
+
+        try {
+            Usuario usuario = entityManager.find(Usuario.class, idUsuario);
+
+            if (usuario == null) {
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+                return result;
+            }
+            List<PokemonFavorito> favoritos = usuario.getPokemonsFavoritos();
+
+            for (PokemonFavorito favorito : favoritos) {
+
+                Result resultDeleteFavorite = pokemonFavoritoDAOImplementation.DeletePokemonFavorite(idUsuario,
+                        favorito.getPokemon());
+                if (!resultDeleteFavorite.correct) {
+                    result.correct = false;
+                    result.errorMessage = "Error al eliminar pokemon favorito: " + resultDeleteFavorite.errorMessage;
+                    return result;
+                }
+
+            }
+
+            entityManager.remove(usuario);
+            entityManager.flush();
+
+            result.correct = true;
+            result.errorMessage = "Usuario y relaciones eliminadas correctamente";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
     }
-    
+
     @Transactional
     @Override
     public Result<Usuario> Update(Usuario usuario) {
@@ -192,4 +192,40 @@ public class UsuarioDAOImplementation implements IUsuario {
         return null;
     }
 
+    @Transactional
+    @Override
+    public Result<Usuario> UpdatePassword(Usuario usuario) {
+
+        Result<Usuario> result = new Result<Usuario>();
+
+        try {
+
+            Usuario usuarioBD
+                    = entityManager.find(Usuario.class,
+                            usuario.getIdUsuario());
+
+            if (usuarioBD == null) {
+
+                result.correct = false;
+                result.errorMessage = "Usuario no encontrado";
+
+                return result;
+            }
+
+            usuarioBD.setPassword(usuario.getPassword());
+
+            entityManager.merge(usuarioBD);
+
+            result.correct = true;
+            result.object = usuarioBD;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
 }

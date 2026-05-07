@@ -16,10 +16,10 @@ public class VerificacionToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idtoken") 
+    @Column(name = "idtoken")
     private Long idToken;
 
-    @Column(name = "token") 
+    @Column(name = "token")
     private String token;
 
     @Column(name = "expirationdate")
@@ -27,6 +27,9 @@ public class VerificacionToken {
 
     @Column(name = "used")
     private int used;
+
+    @Column(name = "type")
+    private String type;
 
     @ManyToOne
     @JoinColumn(name = "idusuario")
@@ -63,6 +66,14 @@ public class VerificacionToken {
     public void setUsed(int used) {
         this.used = used;
     }
+    
+    public String getType(){
+        return type;
+    }
+    
+    public void setType(String type){
+        this.type = type;
+    }
 
     public Usuario getUsuario() {
         return usuario;
@@ -70,5 +81,5 @@ public class VerificacionToken {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
-    }    
+    }
 }
