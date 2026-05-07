@@ -183,7 +183,7 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
         Result<Pokemon> result = new Result<>();
         try {
             Object topPokemon = entityManager.createQuery(
-                    "SELECT p.pokemon.name, COUNT(p) as total " +
+                    "SELECT p.pokemon.name,p.pokemon.idPokemon, COUNT(p) as total " +
                             "FROM PokemonFavorito p " +
                             "GROUP BY p.pokemon.idPokemon, p.pokemon.name " +
                             "ORDER BY total ASC")
