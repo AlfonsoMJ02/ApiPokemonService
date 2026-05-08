@@ -6,6 +6,7 @@ import com.ApiPokemonService.ApiPokemonService.JPA.VerificacionToken;
 import com.ApiPokemonService.ApiPokemonService.Service.EmailService;
 import com.ApiPokemonService.ApiPokemonService.Service.JwtUtil;
 import com.ApiPokemonService.ApiPokemonService.Service.VerificacionTokenService;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Date;
@@ -87,6 +88,19 @@ public class LoginRestController {
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body("Login correcto");
     }
+    
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(){
+        ResponseCookie cookie = ResponseCookie.from("token", "")
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(0)
+                .sameSite("Lax")
+                .build();
+        
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, cookie.toString()).body("Sesión cerrada");
+    }
 
     @GetMapping("/verify")
     public ResponseEntity<?> verificar(@RequestParam String token) {
@@ -163,7 +177,15 @@ public class LoginRestController {
 
         try {
             if (jwtUtil.validateToken(token)) {
-                return ResponseEntity.ok("Autenticado");
+                String email = jwtUtil.extractEmail(token);
+                
+                Usuario usuario = entityManager.createQuery(
+                        "FROM Usuario WHERE email = :email", Usuario.class)
+                        .setParameter("email", email).getSingleResult();
+                
+                usuario.setPassword(null);
+                
+                return ResponseEntity.ok(usuario);
             }
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -174,7 +196,7 @@ public class LoginRestController {
 
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(
-            @RequestBody Usuario usuarioRequest) {
+            @RequestBody Usuario usuarioRequest) throws MessagingException {
 
         Usuario usuario = entityManager
                 .createQuery(
