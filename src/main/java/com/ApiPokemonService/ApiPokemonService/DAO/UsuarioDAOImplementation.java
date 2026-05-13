@@ -3,7 +3,6 @@ package com.ApiPokemonService.ApiPokemonService.DAO;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
 import com.ApiPokemonService.ApiPokemonService.JPA.Rol;
 import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
-import com.ApiPokemonService.ApiPokemonService.JPA.Pokemon;
 import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.TypedQuery;
@@ -24,7 +23,7 @@ public class UsuarioDAOImplementation implements IUsuario {
 
     @Override
     public Result<Usuario> GetAll() {
-        Result<Usuario> result = new Result<Usuario>();
+        Result<Usuario> result = new Result<>();
 
         try {
             TypedQuery<Usuario> query = entityManager.createQuery("From Usuario", Usuario.class);
@@ -42,7 +41,7 @@ public class UsuarioDAOImplementation implements IUsuario {
 
     @Override
     public Result GetById(int idUsuario) {
-        Result<Usuario> result = new Result<Usuario>();
+        Result<Usuario> result = new Result<>();
 
         try {
             Usuario usuario = entityManager.find(Usuario.class, idUsuario);
@@ -107,7 +106,10 @@ public class UsuarioDAOImplementation implements IUsuario {
                 result.errorMessage = "Usuario no encontrado";
                 return result;
             }
-            List<PokemonFavorito> favoritos = usuario.getPokemonsFavoritos();
+
+            List<PokemonFavorito> favoritos = (List<PokemonFavorito>) pokemonFavoritoDAOImplementation
+                    .GetAllPokemonFavorites(idUsuario).object;
+
 
             for (PokemonFavorito favorito : favoritos) {
 
@@ -139,7 +141,7 @@ public class UsuarioDAOImplementation implements IUsuario {
     @Transactional
     @Override
     public Result<Usuario> Update(Usuario usuario) {
-        Result<Usuario> result = new Result<Usuario>();
+        Result<Usuario> result = new Result<>();
 
         try {
             TypedQuery<Long> query = entityManager
@@ -196,7 +198,7 @@ public class UsuarioDAOImplementation implements IUsuario {
     @Override
     public Result<Usuario> UpdatePassword(Usuario usuario) {
 
-        Result<Usuario> result = new Result<Usuario>();
+        Result<Usuario> result = new Result<>();
 
         try {
 

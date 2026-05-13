@@ -1,6 +1,10 @@
 package com.ApiPokemonService.ApiPokemonService.DAO;
 
 import java.util.List;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import com.ApiPokemonService.ApiPokemonService.JPA.PokemonFavorito;
@@ -18,7 +22,7 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
 
     @Override
     public Result<?> getByUserPokemon(int idUsuario, int idPokemon) {
-        Result<PokemonFavorito> result = new Result<PokemonFavorito>();
+        Result<PokemonFavorito> result = new Result<>();
         try {
             String jpql = "SELECT p FROM PokemonFavorito p JOIN FETCH p.pokemon JOIN FETCH p.usuario WHERE p.usuario.idUsuario = :idUsuario AND p.pokemon.idPokemon = :idPokemon";
 
@@ -70,7 +74,7 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
     @Transactional
     @Override
     public Result<?> DeletePokemonFavorite(int idUsuario, Pokemon pokemonRecibido) {
-        Result<PokemonFavorito> result = new Result<PokemonFavorito>();
+        Result<PokemonFavorito> result = new Result<>();
         try {
             int eliminados = entityManager.createQuery(
                     "DELETE FROM PokemonFavorito p WHERE p.usuario.idUsuario = :idUsuario AND p.pokemon.idPokemon = :idPokemon")
@@ -109,8 +113,7 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
 
     @Transactional
     @Override
-    public Result AddPokemonFavorite(int idUsuario,
-            Pokemon pokemonRecibido) {
+    public Result AddPokemonFavorite(int idUsuario, Pokemon pokemonRecibido) {
 
         Result<PokemonFavorito> result = new Result();
         try {
@@ -149,4 +152,105 @@ public class PokemonFavoritoDAOImplementation implements IPokemonFavorito {
         return result;
     }
 
+    @Override
+    public Result<Pokemon> GetMostFavoritePokemon() {
+        Result<Pokemon> result = new Result<>();
+        try {
+            Object topPokemon = entityManager.createQuery(
+                    "SELECT p.pokemon.name,p.pokemon.idPokemon, COUNT(p) as total " +
+                            "FROM PokemonFavorito p " +
+                            "GROUP BY p.pokemon.idPokemon, p.pokemon.name " +
+                            "ORDER BY total DESC")
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+            result.object = topPokemon;
+            result.correct = true;
+            result.errorMessage = "Pokémon más seleccionado recuperado";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result<Pokemon> GetLeastFavoritePokemon() {
+        Result<Pokemon> result = new Result<>();
+        try {
+            Object topPokemon = entityManager.createQuery(
+                    "SELECT p.pokemon.name,p.pokemon.idPokemon, COUNT(p) as total " +
+                            "FROM PokemonFavorito p " +
+                            "GROUP BY p.pokemon.idPokemon, p.pokemon.name " +
+                            "ORDER BY total ASC")
+                    .setMaxResults(1)
+                    .getSingleResult();
+
+            result.object = topPokemon;
+            result.correct = true;
+            result.errorMessage = "Pokémon menos seleccionado recuperado";
+
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
+
+    @Override
+    public Result<Object[]> GetFavoritePokemonWithUsers() {
+        Result<Object[]> result = new Result<>();
+
+        try {
+
+            List<Object[]> lista = entityManager.createQuery(
+                    "SELECT p.pokemon.idPokemon, p.pokemon.name, u.userName " +
+                            "FROM PokemonFavorito p " +
+                            "JOIN p.usuario u " +
+                            "ORDER BY p.pokemon.idPokemon",
+                    Object[].class)
+                    .getResultList();
+
+            Map<Integer, Object[]> agrupados = new LinkedHashMap<>();
+
+            for (Object[] item : lista) {
+
+                Integer idPokemon = (Integer) item[0];
+                String nombrePokemon = (String) item[1];
+                String usuario = (String) item[2];
+
+                if (agrupados.containsKey(idPokemon)) {
+
+                    Object[] existente = agrupados.get(idPokemon);
+                    existente[2] = existente[2] + ", " + usuario;
+
+                } else {
+
+                    agrupados.put(idPokemon, new Object[] {
+                            idPokemon,
+                            nombrePokemon,
+                            usuario
+                    });
+                }
+            }
+
+            List<Object[]> resultadoFinal = new ArrayList<>(agrupados.values());
+
+            result.objects = resultadoFinal;
+            result.correct = true;
+
+        } catch (Exception ex) {
+
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+
+        return result;
+    }
 }

@@ -15,35 +15,35 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "pokemonfavorito")
 public class PokemonFavorito {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "idpokemonfavorito")
-    private int idPokemonFavorito;
+   
+   @Id
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
+   @Column(name = "idpokemonfavorito")
+   private int idPokemonFavorito;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idusuario")
-    @JsonIgnore
-    private Usuario usuario;
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "idusuario")
+   @JsonIgnore
+   private Usuario usuario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "idpokemon")
-    
-    private Pokemon pokemon;
+   @ManyToOne(fetch = FetchType.LAZY)
+   @JoinColumn(name = "idpokemon")
+   
+   private Pokemon pokemon;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
+   public Usuario getUsuario() {
+       return usuario;
+   }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
+   public void setUsuario(Usuario usuario) {
+       this.usuario = usuario;
+   }
 
-    public Pokemon getPokemon() {
-        return pokemon;
-    }
+   public Pokemon getPokemon() {
+       return pokemon;
+   }
 
-    public void setPokemon(Pokemon pokemon) {
-        this.pokemon = pokemon;
-    }
+   public void setPokemon(Pokemon pokemon) {
+       this.pokemon = pokemon;
+   }
 }

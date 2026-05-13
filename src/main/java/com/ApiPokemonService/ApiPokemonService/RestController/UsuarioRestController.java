@@ -40,10 +40,10 @@ public class UsuarioRestController {
 
     @Autowired
     CustomUserDetailsService usuarioService;
-
+    
     @GetMapping()
     public ResponseEntity<Result<Usuario>> getAll() {
-        Result<Usuario> result = new Result<Usuario>();
+        Result<Usuario> result = new Result<>();
         try {
             result = usuarioDAO.GetAll();
             if (result.correct) {
@@ -71,18 +71,19 @@ public class UsuarioRestController {
             result = usuarioDAO.GetById(idUsuario);
             if (result.correct) {
                 return ResponseEntity.ok(result);
-            }else{
-                result.correct=false;
+            } else {
+                result.correct = false;
                 return ResponseEntity.badRequest().body(result);
-                
+
             }
         } catch (Exception e) {
-            result.correct=false;
-            result.ex= e;
-            result.errorMessage=e.getLocalizedMessage();
+            result.correct = false;
+            result.ex = e;
+            result.errorMessage = e.getLocalizedMessage();
             return ResponseEntity.internalServerError().body(result);
         }
     }
+
     @PutMapping("/update")
     public ResponseEntity<Result<?>> update(@RequestBody Usuario usuario) {
         Result<?> result = new Result<>();
@@ -131,40 +132,40 @@ public class UsuarioRestController {
         }
 
     }
-    
+
     @PutMapping("/update/{idUsuario}")
-    public ResponseEntity<?> update(@PathVariable int idUsuario, @RequestBody Usuario usuario){
+    public ResponseEntity<?> update(@PathVariable int idUsuario, @RequestBody Usuario usuario) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        
+
         String emailLogueado = auth.getName();
-        
+
         boolean esMaestro = auth.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals(("ROLE_Maestro")));
-        
+
         Result resultUsuario = usuarioDAO.GetByEmail(emailLogueado);
-        
+
         if (!resultUsuario.correct) {
             return ResponseEntity.status(404).body("Usuario no encontrado");
         }
-        
+
         Usuario usuarioLogueado = (Usuario) resultUsuario.object;
-        
+
         if (!esMaestro && usuarioLogueado.getIdUsuario() != idUsuario) {
             return ResponseEntity.status(403).body("No tienes permisos para editar a este usuario");
         }
-        
+
         usuario.setIdUsuario(idUsuario);
         Result result = usuarioDAO.Update(usuario);
-        
+
         if (result.correct) {
             return ResponseEntity.ok(result);
         } else {
             return ResponseEntity.status(404).body(result);
         }
     }
-    
-     @GetMapping("/rol")
+
+    @GetMapping("/rol")
     public ResponseEntity<Result<Rol>> getAllRol() {
-        Result<Rol> result = new Result<Rol>();
+        Result<Rol> result = new Result<>();
         try {
             result = rolDAO.GetAll();
             if (result.correct) {
@@ -176,13 +177,11 @@ public class UsuarioRestController {
         } catch (Exception ex) {
             result.correct = false;
             result.errorMessage = ex.getLocalizedMessage();
-            result.ex = ex;
             return ResponseEntity.internalServerError().body(result);
         }
 
     }
 
-//     POKEMON FAVORITOS DEL USUARIO ACTUAL
     @GetMapping("/pokeFavs/{idUsuario}")
     public ResponseEntity GetAllPokemonFavorites(@PathVariable("idUsuario") int idUsuario) {
         Result result = new Result<>();
@@ -196,7 +195,6 @@ public class UsuarioRestController {
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
-            result.ex = e;
             return ResponseEntity.internalServerError().body(result);
         }
     }
@@ -215,7 +213,6 @@ public class UsuarioRestController {
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
-            result.ex = e;
             return ResponseEntity.internalServerError().body(result);
         }
     }
@@ -234,7 +231,58 @@ public class UsuarioRestController {
         } catch (Exception e) {
             result.correct = false;
             result.errorMessage = e.getLocalizedMessage();
-            result.ex = e;
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @GetMapping("/pokeFavs/mostFavorite")
+    public ResponseEntity GetMostFavoritePokemon() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetMostFavoritePokemon();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+
+    @GetMapping("/pokeFavs/leastFavorite")
+    public ResponseEntity GetPokemonLeastFavorite() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetLeastFavoritePokemon();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage(); 
+            return ResponseEntity.internalServerError().body(result);
+        }
+    }
+    
+    //@PreAuthorize("hasRole('MAESTRO')")
+    @GetMapping("/pokeFavs/allFavorites")
+    public ResponseEntity GetFavoritePokemonWithUsers() {
+        Result result = new Result<>();
+        try {
+            result = pokemonFavoritoDAOImplementation.GetFavoritePokemonWithUsers();
+            if (result.correct) {
+                return ResponseEntity.ok().body(result);
+            } else {
+                return ResponseEntity.badRequest().body(result);
+            }
+        } catch (Exception e) {
+            result.correct = false;
+            result.errorMessage = e.getLocalizedMessage();
             return ResponseEntity.internalServerError().body(result);
         }
     }

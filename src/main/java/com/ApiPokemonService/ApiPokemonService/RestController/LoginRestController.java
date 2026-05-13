@@ -51,11 +51,11 @@ public class LoginRestController {
                 .orElse(null);
 
         if (usuario == null) {
-            return ResponseEntity.status(401).body("Usuario no encontrado");
+            return ResponseEntity.status(401).body("Credenciales invalidas");
         }
 
         if (!passwordEncoder.matches(usuarioRequest.getPassword(), usuario.getPassword())) {
-            return ResponseEntity.status(401).body("Contraseña incorrecta");
+            return ResponseEntity.status(401).body("Credenciales invalidas");
         }
 
         if (usuario.getVerified() == 0) {
