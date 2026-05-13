@@ -10,7 +10,6 @@ import com.ApiPokemonService.ApiPokemonService.JPA.Usuario;
 import com.ApiPokemonService.ApiPokemonService.Service.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -39,7 +38,7 @@ public class UsuarioRestController {
     private PokemonFavoritoDAOImplementation pokemonFavoritoDAOImplementation;
 
     @Autowired
-    CustomUserDetailsService usuarioService;
+    private CustomUserDetailsService usuarioService;
     
     @GetMapping()
     public ResponseEntity<Result<Usuario>> getAll() {
@@ -269,7 +268,6 @@ public class UsuarioRestController {
         }
     }
     
-    //@PreAuthorize("hasRole('MAESTRO')")
     @GetMapping("/pokeFavs/allFavorites")
     public ResponseEntity GetFavoritePokemonWithUsers() {
         Result result = new Result<>();
