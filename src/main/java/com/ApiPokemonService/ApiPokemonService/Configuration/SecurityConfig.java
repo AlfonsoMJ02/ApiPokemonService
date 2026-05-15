@@ -28,7 +28,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/verify", "/auth/me", "/auth/forgot-password", "/auth/reset-password").permitAll()
+                .requestMatchers("/auth/login", "/auth/verify", "/auth/me", "/auth/forgot-password", "/auth/reset-password"
+                , "/peticion").permitAll()
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -45,7 +46,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of("http://localhost:4200", "https://pokeapi.co/api/v2/pokemon"));
+        config.setAllowedOrigins(List.of("http://localhost:4200", "https://pokeapi.co/api/v2/pokemon", "http://192.167.0.61:4200"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
 

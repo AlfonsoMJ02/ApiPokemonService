@@ -17,7 +17,7 @@ public class EmailService {
 
     public void enviarCorreoVerificacion(String to, String token) throws MessagingException {
 
-        String link = "http://localhost:8080/auth/verify?token=" + token;
+        String link = "http://192.167.0.61:8080/auth/verify?token=" + token;
 
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -105,7 +105,7 @@ public class EmailService {
             throws MessagingException {
 
         String link
-                = "http://localhost:4200/reset-password?token=" + token;
+                = "http://192.167.0.61:4200/reset-password?token=" + token;
 
         MimeMessage message = mailSender.createMimeMessage();
 
