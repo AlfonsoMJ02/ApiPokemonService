@@ -25,6 +25,8 @@ public class Peticion {
     private LocalDateTime fechaHora;
     @Column(name = "status")
     private int status;
+    @Column(name = "descripcion")
+    private String descripcion;
 
     public int getIdPeticion() {
         return idPeticion;
@@ -50,8 +52,6 @@ public class Peticion {
         this.fechaHora = fechaHora;
     }
 
-   
-
     public int getStatus() {
         return status;
     }
@@ -59,7 +59,13 @@ public class Peticion {
     public void setStatus(int status) {
         this.status = status;
     }
-    
-    
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
 }
