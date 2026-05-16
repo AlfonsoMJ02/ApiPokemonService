@@ -11,4 +11,5 @@ public interface IUsuario {
     Result Delete(int idUsuario);
     Result GetByEmail(String email);
     Result UpdatePassword(Usuario usuario);
+    Result Register(Usuario usuario);
 }

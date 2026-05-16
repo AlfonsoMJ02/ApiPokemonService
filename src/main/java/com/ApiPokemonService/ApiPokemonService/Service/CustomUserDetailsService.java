@@ -50,4 +50,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         return usuarioDAO.Add(usuario);
     }
+    
+    public Result registro2(Usuario usuario) {
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        
+        return usuarioDAO.Register(usuario);
+    }
 }

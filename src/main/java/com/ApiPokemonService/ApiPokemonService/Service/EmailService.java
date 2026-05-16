@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
@@ -104,13 +103,11 @@ public class EmailService {
     public void enviarCorreoRecuperacion(String to, String token)
             throws MessagingException {
 
-        String link
-                = "http://localhost:4200/reset-password?token=" + token;
+        String link = "http://localhost:4200/reset-password?token=" + token;
 
         MimeMessage message = mailSender.createMimeMessage();
 
-        MimeMessageHelper helper
-                = new MimeMessageHelper(message, true, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setTo(to);
 
