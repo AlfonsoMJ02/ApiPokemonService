@@ -3,6 +3,8 @@ package com.ApiPokemonService.ApiPokemonService.RestController;
 import com.ApiPokemonService.ApiPokemonService.DAO.PeticionDAOImplementation;
 import com.ApiPokemonService.ApiPokemonService.JPA.Peticion;
 import com.ApiPokemonService.ApiPokemonService.JPA.Result;
+import com.ApiPokemonService.ApiPokemonService.Service.EmailService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,6 +22,9 @@ public class PeticionRestController {
 
     @Autowired
     private PeticionDAOImplementation peticionDAOImplementation;
+
+    @Autowired
+    private EmailService emailService;
 
     @GetMapping
     public ResponseEntity getAll() {
@@ -100,7 +105,7 @@ public class PeticionRestController {
                 if (result.object == null) {
                     return ResponseEntity.noContent().build();
                 } else {
-
+                    emailService.enviarCorreoEstadoPeticion(peticion);
                     return ResponseEntity.ok(result);
                 }
             } else {
@@ -108,7 +113,7 @@ public class PeticionRestController {
             }
         } catch (Exception ex) {
             result.correct = false;
-            result.errorMessage = ex.getLocalizedMessage();
+            result.errorMessage = ex.   getLocalizedMessage();
             result.ex = ex;
             return ResponseEntity.internalServerError().body(result);
         }
@@ -123,9 +128,10 @@ public class PeticionRestController {
             result = peticionDAOImplementation.decline(peticion);
             if (result.correct) {
                 if (result.object == null) {
-                    return ResponseEntity.noContent().build();
+                    return ResponseEntity.noContent().build();  
                 } else {
 
+                    emailService.enviarCorreoEstadoPeticion(peticion);
                     return ResponseEntity.ok(result);
                 }
             } else {
