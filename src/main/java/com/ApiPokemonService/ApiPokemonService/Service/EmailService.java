@@ -6,7 +6,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.ApiPokemonService.ApiPokemonService.JPA.Peticion;
-
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
@@ -106,7 +105,8 @@ public class EmailService {
     public void enviarCorreoRecuperacion(String to, String token)
             throws MessagingException {
 
-        String link = "http://192.167.0.61:4200/reset-password?token=" + token;
+        String link
+                = "http://localhost:4200/reset-password?token=" + token;
 
         MimeMessage message = mailSender.createMimeMessage();
 

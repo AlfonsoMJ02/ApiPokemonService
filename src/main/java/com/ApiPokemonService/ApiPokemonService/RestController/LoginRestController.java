@@ -196,8 +196,7 @@ public class LoginRestController {
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(
-            @RequestBody Usuario usuarioRequest) throws MessagingException {
+    public ResponseEntity<?> forgotPassword(@RequestBody Usuario usuarioRequest) throws MessagingException {
 
         Usuario usuario = entityManager
                 .createQuery(

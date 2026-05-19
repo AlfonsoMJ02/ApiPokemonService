@@ -111,6 +111,17 @@ public class UsuarioRestController {
             return ResponseEntity.status(401).body(result);
         }
     }
+    
+    @PostMapping("/register")
+    public ResponseEntity<Result<Usuario>> register(@RequestBody Usuario usuario){
+        Result result = usuarioService.registro2(usuario);
+        
+        if (result.correct) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.status(400).body(result);
+        }
+    }
 
     @DeleteMapping("/delete")
     public ResponseEntity<Result<?>> delete(@RequestParam("idUsuario") int idUsuario) {

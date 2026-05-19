@@ -21,15 +21,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http,
-            JwtFilter jwtFilter) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtFilter jwtFilter) throws Exception {
 
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/verify", "/auth/me", "/auth/forgot-password", "/auth/reset-password"
-                , "/peticion/**").permitAll()
+                .requestMatchers("/auth/login", "/auth/verify", "/auth/me", "/auth/forgot-password", "/auth/reset-password", "/peticion/**", "/usuario/register").permitAll()
                 .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -57,8 +55,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public JwtFilter jwtFilter(JwtUtil jwtUtil,
-            CustomUserDetailsService userDetailsService) {
+    public JwtFilter jwtFilter(JwtUtil jwtUtil, CustomUserDetailsService userDetailsService) {
         return new JwtFilter(jwtUtil, userDetailsService);
     }
 

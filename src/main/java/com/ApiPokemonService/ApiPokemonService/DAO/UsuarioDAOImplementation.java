@@ -92,6 +92,39 @@ public class UsuarioDAOImplementation implements IUsuario {
         }
         return result;
     }
+    
+    @Override
+    public Result Register(Usuario usuario) {
+        Result result = new Result();
+        try {
+            TypedQuery<Long> query = entityManager.createQuery("SELECT COUNT(u) FROM Usuario u WHERE u.email = :email",
+                    Long.class);
+            query.setParameter("email", usuario.getEmail());
+            
+            Long count = query.getSingleResult();
+            
+            if (count > 0) {
+                result.correct = false;
+                result.errorMessage = "Este correo ya esta registrado";
+                return result;
+            }
+            Rol rolBD = entityManager.find(Rol.class, 2);
+            
+            usuario.setRol(rolBD);
+            
+            usuario.setVerified(0);
+            entityManager.persist(usuario);
+            
+            result.correct = true;
+            result.object = usuario;
+            
+        } catch (Exception ex) {
+            result.correct = false;
+            result.errorMessage = ex.getLocalizedMessage();
+            result.ex = ex;
+        }
+        return result;
+    }
 
     @Transactional
     @Override
